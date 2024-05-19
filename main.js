@@ -1,4 +1,4 @@
-var size, size2, targets, position, gravity, projectiles, dir, force;
+var size, size2, targets, position, gravity, projectiles, dir, force, targetVel, targetAcc;
 
 function setup() {
     size = v(innerWidth, innerHeight);
@@ -10,6 +10,8 @@ function setup() {
     targets = [];
     dir = PI / 4;
     force = 10;
+    targetVel = v(2, 2);
+    targetAcc = gravity;
     projectiles.push({ pos: position.copy(), vel: v(force, 0).rotate(dir) });
 }
 function draw() {
@@ -69,7 +71,7 @@ function v(x, y) {
 }
 document.addEventListener("keydown", (e) => {
     if (e.key == " ") {
-        targets.push({ pos: v(mouseX - 100, -mouseY + size.y - 100), vel: v(2, 2), acc: gravity, hit: false, hittable: false });
+        targets.push({ pos: v(mouseX - 100, -mouseY + size.y - 100), vel: targetVel.copy(), acc: targetAcc.copy(), hit: false, hittable: false });
         let d = calcPath(targets[targets.length - 1], 50);
         if (d != null) {
             dir = d.heading() + PI;
@@ -82,7 +84,7 @@ function calcPath(target, steps) {
     let relPos = p5.Vector.sub(position, target.pos);
     let relVel = p5.Vector.div(target.vel, -steps);
     let relAcc = p5.Vector.mult(p5.Vector.sub(gravity, target.acc), steps ** -2);
-    for (let s = 0; s < 1000; s += force / steps) {
+    for (let s = 0; s < size.mag(); s += force / steps) {
         relVel.add(relAcc);
         relPos.add(relVel);
         if (relPos.mag() <= s) {
