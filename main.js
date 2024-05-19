@@ -1,8 +1,7 @@
-var size, size2, targets, position, gravity, projectiles, dir, force, targetVel, targetAcc;
+var size, targets, position, gravity, projectiles, dir, force, targetVel, targetAcc;
 
 function setup() {
     size = v(innerWidth, innerHeight);
-    size2 = p5.Vector.div(size, 2);
     createCanvas(size.x, size.y);
     position = v(0, 0);
     gravity = v(0, -0.1);
@@ -73,7 +72,7 @@ function v(x, y) {
 document.addEventListener("keydown", (e) => {
     if (e.key == " ") {
         targets.push({ pos: v(mouseX - 100, -mouseY + size.y - 100), vel: targetVel.copy(), acc: targetAcc.copy(), hit: 0, hittable: 0, hitBy: [] });
-        let hits = calcPath(targets[targets.length - 1], 50);
+        let hits = calcHits(targets[targets.length - 1], 50);
         hits.forEach((d) => {
             dir = d.heading() + PI;
             projectiles.push({ pos: position.copy(), vel: v(force, 0).rotate(dir), id: floor(random() * 1000) });
@@ -81,7 +80,7 @@ document.addEventListener("keydown", (e) => {
         });
     }
 });
-function calcPath(target, steps) {
+function calcHits(target, steps) {
     let relPos = p5.Vector.sub(position, target.pos);
     let relVel = p5.Vector.div(target.vel, -steps);
     let relAcc = p5.Vector.mult(p5.Vector.sub(gravity, target.acc), steps ** -2);
@@ -99,3 +98,7 @@ function calcPath(target, steps) {
     }
     return hits;
 }
+addEventListener("resize", (e) => {
+    size = v(innerWidth, innerHeight);
+    resizeCanvas(size.x, size.y);
+});
